@@ -259,8 +259,8 @@ void ImGuiConsole::LogWindow()
         m_ScrollToBottom = false;
 
         // Loop through command string vector.
-        ImGui::EndChild();
     }
+    ImGui::EndChild();
 }
 
 void ImGuiConsole::InputBar()
