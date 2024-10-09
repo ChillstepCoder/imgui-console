@@ -202,6 +202,28 @@ namespace csys
 
         /*!
          * \brief
+         *      PROJECT KIWI Registers an alias for an existing command
+         */
+        void RegisterCommandAliases(const String& commandName, std::vector<String> aliasNames) {
+            for (auto& str : aliasNames) {
+                auto it = m_Commands.find(commandName.m_String);
+                if (it == m_Commands.end()) {
+                    Log(ERR) << "Command " << commandName.m_String << " does not exist" << csys::endl;
+                    throw csys::Exception("ERROR: Command does not exist");
+                    return;
+                }
+
+                if (m_Aliases.contains(str.m_String)) {
+                    Log(ERR) << "Alias " << str.m_String << " already exists" << csys::endl;
+                    throw csys::Exception("ERROR: Alias already exists");
+                    return;
+                }
+                m_Aliases[str.m_String] = it->second.get();
+            }
+        }
+
+        /*!
+         * \brief
          *      Register's a variable within the system
          * \tparam T
          *      Type of the variable
@@ -335,6 +357,7 @@ namespace csys
         void ParseCommandLine(const String &line);                                   //!< Parse command line and execute command
 
         std::unordered_map<std::string, std::unique_ptr<CommandBase>> m_Commands;    //!< Registered command container
+        std::unordered_map<std::string, CommandBase*> m_Aliases;                     //!< Command aliases
         AutoComplete m_CommandSuggestionTree;                                        //!< Autocomplete Ternary Search Tree for commands
         AutoComplete m_VariableSuggestionTree;                                       //!< Autocomplete Ternary Search Tree for registered variables
         CommandHistory m_CommandHistory;                                             //!< History of executed commands

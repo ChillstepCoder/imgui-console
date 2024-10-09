@@ -280,21 +280,30 @@ namespace csys
         }
 
         // Get runnable command
-        auto command = m_Commands.find(command_name);
-        if (command == m_Commands.end())
-            Log(ERR) << s_ErrorSetGetNotFound << endl;
-            // Run the command
-        else
-        {
-            // Get the arguments.
-            String arguments = line.m_String.substr(range.second, line.m_String.size() - range.first);
-
-            // Execute command.
-            auto cmd_out = (*command->second)(arguments);
-
-            // Log output.
-            if (cmd_out.m_Type != NONE)
-                m_ItemLog.Items().emplace_back(cmd_out);
+        auto commandIt = m_Commands.find(command_name);
+        CommandBase* command;
+        if (commandIt == m_Commands.end()) {
+            // Check alias
+            auto aliasIt = m_Aliases.find(command_name);
+            if (aliasIt != m_Aliases.end()) {
+                command = aliasIt->second;
+            }
+            else {
+                Log(ERR) << s_ErrorSetGetNotFound << endl;
+                return;
+            }
         }
+        else {
+            command = commandIt->second.get();
+        }
+        // Get the arguments.
+        String arguments = line.m_String.substr(range.second, line.m_String.size() - range.first);
+
+        // Execute command.
+        auto cmd_out = (*command)(arguments);
+
+        // Log output.
+        if (cmd_out.m_Type != NONE)
+            m_ItemLog.Items().emplace_back(cmd_out);
     }
 }
