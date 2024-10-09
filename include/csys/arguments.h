@@ -152,7 +152,7 @@ namespace csys
          * \return
          *      Returns this
          */
-        Arg<T> &Parse(String &input, size_t &start)
+        Arg<T> &Parse(String &input, size_t &start, bool isLast)
         {
             size_t index = start;
 
@@ -160,7 +160,7 @@ namespace csys
             if (input.NextPoi(index).first == input.End())
                 throw Exception("Not enough arguments were given", input.m_String);
             // Set value grabbed from input aka command line argument
-            m_Arg.m_Value = ArgumentParser<ValueType>(input, start).m_Value;
+            m_Arg.m_Value = ArgumentParser<ValueType>(input, start, isLast).m_Value;
             return *this;
         }
 
@@ -196,7 +196,7 @@ namespace csys
          * \return
          *      Returns this
          */
-        Arg<NULL_ARGUMENT> &Parse(String &input, size_t &start)
+        Arg<NULL_ARGUMENT> &Parse(String &input, size_t &start, bool isLast)
         {
             if (input.NextPoi(start).first != input.End())
                 throw Exception("Too many arguments were given", input.m_String);

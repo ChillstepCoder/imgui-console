@@ -129,10 +129,10 @@ namespace csys
   template<> \
   struct CSYS_API ArgumentParser<TYPE> \
   { \
-    inline ArgumentParser(String &input, size_t &start); \
+    inline ArgumentParser(String &input, size_t &start, bool isLast); \
     TYPE m_Value = 0; \
   }; \
-  inline ArgumentParser<TYPE>::ArgumentParser(String &input, size_t &start)
+  inline ArgumentParser<TYPE>::ArgumentParser(String &input, size_t &start, bool isLast)
 
     /*!
      * \brief
@@ -202,25 +202,20 @@ namespace csys
         // Go to the start of the string argument
         auto range = input.NextPoi(start);
 
-        // If its a single string
-        if (input.m_String[range.first] != '"')
-            m_Value = GetWord(input.m_String, range.first, range.second);
-        // Multi word string
-        else
-        {
-            ++range.first; // move past the first "
-            while (true)
-            {
+        // Helper
+        auto getWords = [&]() {
+            while (true) {
                 // Get the next non-escaped "
                 range.second = input.m_String.find('"', range.first);
                 while (range.second != std::string::npos && Reserved::IsEscaped(input.m_String, range.second))
                     range.second = input.m_String.find('"', range.second + 1);
 
                 // Check for closing "
-                if (range.second == std::string::npos)
-                {
+                if (range.second == std::string::npos) {
                     range.second = input.m_String.size();
-                    throw Exception("Could not find closing '\"'", ARG_PARSE_SUBSTR(range));
+                    if (!isLast) {
+                        throw Exception("Could not find closing '\"'", ARG_PARSE_SUBSTR(range));
+                    }
                 }
 
                 // Add word to already existing string
@@ -230,8 +225,7 @@ namespace csys
                 range.first = range.second + 1;
 
                 // End of string check
-                if (range.first < input.m_String.size() && !std::isspace(input.m_String[range.first]))
-                {
+                if (range.first < input.m_String.size() && !std::isspace(input.m_String[range.first])) {
                     // joining two strings together
                     if (input.m_String[range.first] == '"')
                         ++range.first;
@@ -240,6 +234,24 @@ namespace csys
                     // End of input
                     break;
             }
+        };
+
+        // If its a single string
+        if (input.m_String[range.first] != '"') {
+            if (isLast) {
+                // Last string doesnt require "
+                getWords();
+            }
+            else {
+                m_Value = GetWord(input.m_String, range.first, range.second);
+            }
+        }
+        else 
+        {
+            // Multi word string
+
+            ++range.first; // move past the first "
+            getWords();
         }
 
         // Finished parsing

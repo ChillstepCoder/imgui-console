@@ -162,13 +162,14 @@ namespace csys
          *      String of arguments to be parsed
          */
         template<size_t... Is_p, size_t... Is_c>
-        void Call(String &input, const std::index_sequence<Is_p...> &, const std::index_sequence<Is_c...> &)
-        {
+        void Call(String& input, const std::index_sequence<Is_p...>&, const std::index_sequence<Is_c...>&) {
             size_t start = 0;
+            constexpr size_t argumentCount = sizeof...(Is_p);
 
             // Parse arguments
-            int _[]{0, (void(std::get<Is_p>(m_Arguments).Parse(input, start)), 0)...};
-            (void) (_);
+            (void)std::initializer_list<int>{
+                (std::get<Is_p>(m_Arguments).Parse(input, start, Is_p == argumentCount - 2 /*isLast*/), 0)...
+            };
 
             // Call function with unpacked tuple
             m_Function((std::get<Is_c>(m_Arguments).m_Arg.m_Value)...);
@@ -235,7 +236,7 @@ namespace csys
             try
             {
                 // Check to see if input is all whitespace
-                std::get<0>(m_Arguments).Parse(input, start);
+                std::get<0>(m_Arguments).Parse(input, start, false);
             }
             catch (Exception &ae)
             {
