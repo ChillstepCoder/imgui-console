@@ -304,8 +304,10 @@ void ImGuiConsole::InputBar()
 
     // Auto-focus on window apparition
     ImGui::SetItemDefaultFocus();
-    if (reclaimFocus)
+    if (reclaimFocus || m_ForceFocus) {
         ImGui::SetKeyboardFocusHere(-1); // Focus on command line after clearing.
+        m_ForceFocus = false;
+    }
 }
 
 void ImGuiConsole::MenuBar()

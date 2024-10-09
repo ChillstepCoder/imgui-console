@@ -32,6 +32,15 @@ public:
      */
     csys::System &System();
 
+    /*!
+     * \brief Force focus on the input text box this frame
+     */
+    void ForceFocus() { m_ForceFocus = true; }
+
+    const std::string& GetInputBuffer() const { return m_Buffer; }
+    void ClearInputBuffer() { m_Buffer.clear(); }
+    void PopLastInputBufferChar() { if (!m_Buffer.empty()) m_Buffer.pop_back(); }
+
 protected:
 
     // Console ////////////////////////////////////////////////////////////////
@@ -89,6 +98,8 @@ protected:
     static int InputCallback(ImGuiInputTextCallbackData *data);    //!< Console input callback
     bool m_WasPrevFrameTabCompletion = false;                    //!< Flag to determine if previous input was a tab completion
     std::vector<std::string> m_CmdSuggestions;                    //!< Holds command suggestions from partial completion
+
+    bool m_ForceFocus = false;                                    //!< Flag to force focus on console
 
     // Save data inside .ini
 
