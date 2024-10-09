@@ -169,7 +169,7 @@ namespace csys
             // Check if command has a name
             else if (range.first == name.End())
             {
-                Log(ERROR) << "Empty command name given" << csys::endl;
+                Log(ERR) << "Empty command name given" << csys::endl;
                 return;
             }
 

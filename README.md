@@ -1,4 +1,5 @@
 # imgui-console
+# THIS IS A CUSTOM FORK FOR PROJECT KIWI TO RESOLVE BUILD ERRORS
 Console Widget for [Dear ImGui](https://github.com/ocornut/imgui)
 
 ![imgui_console](https://user-images.githubusercontent.com/46074377/85931741-7b756200-b87b-11ea-9112-89d7fca305a0.gif)

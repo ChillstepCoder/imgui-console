@@ -28,7 +28,7 @@ namespace csys
         COMMAND = 0,
         LOG,
         WARNING,
-        ERROR,
+        ERR,
         INFO,
         NONE
     };
